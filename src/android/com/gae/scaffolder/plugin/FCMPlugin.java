@@ -2,6 +2,11 @@ package com.gae.scaffolder.plugin;
 
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
+import android.os.PowerManager;
+import android.provider.Settings;
 import android.util.Log;
 
 import com.gae.scaffolder.plugin.interfaces.*;
@@ -79,6 +84,32 @@ public class FCMPlugin extends CordovaPlugin {
 
         try {
             if (action.equals("ready")) {
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (!Settings.canDrawOverlays(getContext())) {
+                        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                Uri.parse("package:" + getContext().getPackageName()));
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        getContext().startActivity(intent);
+                    }
+                }
+
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    Intent intent = new Intent();
+                    String packageName = getContext().getPackageName();
+                    PowerManager pm = (PowerManager) getContext().getSystemService(Context.POWER_SERVICE);
+                    if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+                        intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                        intent.setData(Uri.parse("package:" + packageName));
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        getContext().startActivity(intent);
+                    }
+                }
+
+                Intent intent = new Intent(getContext(), AlarmService.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getContext().startService(intent);
+
                 callbackContext.success();
             } else if (action.equals("startJsEventBridge")) {
                 this.jsEventBridgeCallbackContext = callbackContext;

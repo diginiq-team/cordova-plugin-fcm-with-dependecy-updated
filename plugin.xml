@@ -47,6 +47,7 @@
 					<category android:name="android.intent.category.DEFAULT" />
 				</intent-filter>
 			</activity>
+        	<activity android:name="com.gae.scaffolder.plugin.AlarmActivity"></activity>
 			<service 
 				android:name="com.gae.scaffolder.plugin.MyFirebaseMessagingService"
 				android:stopWithTask="false">
@@ -54,8 +55,29 @@
 					<action android:name="com.google.firebase.MESSAGING_EVENT"/>
 				</intent-filter>
 			</service>
+			<service
+				android:name="com.gae.scaffolder.plugin.AlarmService"
+				android:enabled="true"
+				android:exported="true"
+				android:icon="@mipmap/ic_launcher"
+				android:label="@string/app_name"
+				android:process=":alarmService"
+				android:stopWithTask="false">
+				<intent-filter>
+					<action android:name="android.intent.action.BOOT_COMPLETED" />
+
+					<category android:name="android.intent.category.DEFAULT" />
+				</intent-filter>
+			</service>
 			<meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="$ANDROID_DEFAULT_NOTIFICATION_ICON" />
 		</config-file>
+		
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+			<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+			<uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+			<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+        </config-file>
+
 		<config-file target="res/xml/config.xml" parent="/*">
 			<feature name="FCMPlugin">
 				<param name="android-package" value="com.gae.scaffolder.plugin.FCMPlugin"/>
@@ -75,7 +97,9 @@
 		<source-file src="src/android/com/gae/scaffolder/plugin/FCMPlugin.java" target-dir="src/com/gae/scaffolder/plugin" />
 		<source-file src="src/android/com/gae/scaffolder/plugin/FCMPluginChannelCreator.java" target-dir="src/com/gae/scaffolder/plugin" />
 		<source-file src="src/android/com/gae/scaffolder/plugin/MyFirebaseMessagingService.java" target-dir="src/com/gae/scaffolder/plugin" />
+		<source-file src="src/android/com/gae/scaffolder/plugin/AlarmService.java" target-dir="src/com/gae/scaffolder/plugin" />
 		<source-file src="src/android/com/gae/scaffolder/plugin/FCMPluginActivity.java" target-dir="src/com/gae/scaffolder/plugin" />
+		<source-file src="src/android/com/gae/scaffolder/plugin/AlarmActivity.java" target-dir="src/com/gae/scaffolder/plugin" />
 		<source-file src="src/android/com/gae/scaffolder/plugin/interfaces/OnFinishedListener.java" target-dir="src/com/gae/scaffolder/plugin/interfaces" />
 		<source-file src="src/android/com/gae/scaffolder/plugin/interfaces/TokenListeners.java" target-dir="src/com/gae/scaffolder/plugin/interfaces" />
 	</platform>
