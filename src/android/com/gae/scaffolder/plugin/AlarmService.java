@@ -17,8 +17,6 @@ import androidx.annotation.Nullable;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import io.ionic.starter.R;
-
 public class AlarmService extends Service {
     public int counter = 0;
     public AlarmService(Context applicationContext) {
@@ -61,8 +59,8 @@ public class AlarmService extends Service {
                 Intent notificationIntent = new Intent(this, mainActivity);
                 notificationIntent.setAction(Long.toString(System.currentTimeMillis()));
                 Notification.Builder mBuilder = new Notification.Builder(this);
-                mBuilder.setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle(getString(R.string.app_name))
+                mBuilder.setSmallIcon(context.getResources().getIdentifier("ic_launcher","mipmap",context.getPackageName()))
+                        .setContentTitle(context.getResources().getString(context.getResources().getIdentifier("app_name","string",context.getPackageName())))
                         .setContentText("Alarm Service")
                         .setAutoCancel(true)
                         .setContentIntent(PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT));
