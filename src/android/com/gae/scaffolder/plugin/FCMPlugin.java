@@ -194,6 +194,7 @@ public class FCMPlugin extends CordovaPlugin {
                 jo.put(key, initialPushPayload.get(key));
                 Log.d(TAG, "\tinitialPushPayload: " + key + " => " + initialPushPayload.get(key));
             }
+            setInitialPushPayload(null);
             callback.success(jo);
         } catch(Exception error) {
             try {
@@ -298,9 +299,7 @@ public class FCMPlugin extends CordovaPlugin {
     }
 
     public static void setInitialPushPayload(Map<String, Object> payload) {
-        if(initialPushPayload == null) {
-            initialPushPayload = payload;
-        }
+        initialPushPayload = payload;
     }
 
     public static void sendPushPayload(Map<String, Object> payload) {

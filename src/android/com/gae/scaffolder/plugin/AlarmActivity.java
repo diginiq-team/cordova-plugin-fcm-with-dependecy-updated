@@ -7,10 +7,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.WindowManager;
 
-public class AlarmActivity extends Activity {
+import org.apache.cordova.CordovaActivity;
+
+public class AlarmActivity extends CordovaActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
@@ -18,24 +20,6 @@ public class AlarmActivity extends Activity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 
-        Class mainActivity;
-        Context context = getApplicationContext();
-        String  packageName = context.getPackageName();
-        Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
-        String  className = launchIntent.getComponent().getClassName();
-
-        try {
-            //loading the Main Activity to not import it in the plugin
-            mainActivity = Class.forName(className);
-            startActivity(new Intent(this, mainActivity));
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    finish();
-                }
-            }, 2000);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        loadUrl(launchUrl);
     }
 }
