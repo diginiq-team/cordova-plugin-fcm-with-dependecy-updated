@@ -1,14 +1,18 @@
 package com.gae.scaffolder.plugin;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -57,13 +61,46 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         FCMPlugin.setInitialPushPayload(data);
 
         Log.d(TAG, "\tNotification Data: " + data.toString());
-        FCMPlugin.sendPushPayload(data);
-
-        if(data.containsKey("is_open")) {
-            Intent alarmActivity = new Intent(this, AlarmActivity.class);
-            alarmActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(alarmActivity);
+        try {
+            boolean foregroud = new ForegroundCheckTask().execute(getApplicationContext()).get();
+            if(foregroud) {
+                FCMPlugin.sendPushPayload(data);
+            }else {
+                if(data.containsKey("is_open")) {
+                    Intent alarmActivity = new Intent(this, AlarmActivity.class);
+                    alarmActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(alarmActivity);
+                }
+            }
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
     // [END receive_message]
+
+    class ForegroundCheckTask extends AsyncTask<Context, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Context... params) {
+            final Context context = params[0].getApplicationContext();
+            return isAppOnForeground(context);
+        }
+
+        private boolean isAppOnForeground(Context context) {
+            ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+            List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+            if (appProcesses == null) {
+                return false;
+            }
+            final String packageName = context.getPackageName();
+            for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+                if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND && appProcess.processName.equals(packageName)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
 }
