@@ -69,6 +69,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 if(data.containsKey("is_open")) {
                     Intent alarmActivity = new Intent(this, AlarmActivity.class);
                     alarmActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    alarmActivity.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                    alarmActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    alarmActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(alarmActivity);
                 }
             }
